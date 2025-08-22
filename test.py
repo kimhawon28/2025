@@ -2,6 +2,60 @@ import streamlit as st
 from typing import Dict, List, Tuple
 import random
 
+# ------------------------------
+# 페이지 설정 (아이콘/레이아웃)
+# ------------------------------
+st.set_page_config(
+    page_title="독서 성향 기반 책 추천",
+    page_icon="📖✨",  # 감성 있는 책 이모지
+    layout="wide"
+)
+
+# ------------------------------
+# CSS + 폰트 + 배경음악
+# ------------------------------
+st.markdown("""
+<style>
+/* 배경색 */
+.stApp {
+    background-color: #26365c;
+    color: #f0f0f0;
+    font-family: 'Pretendard', 'Arial Rounded MT Bold', sans-serif;
+}
+
+/* 카드 디자인 */
+.card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 1rem;
+    background-color: rgba(255,255,255,0.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* 소제목/텍스트 */
+h1, h2, h3, h4 {
+    color: #f5f7fa;
+    font-weight: 600;
+}
+.small-note {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+</style>
+
+<!-- 배경 음악 (YouTube embed, 자동재생/반복) -->
+<iframe width="0" height="0" src="https://www.youtube.com/embed/4Tr0otuiQuU?autoplay=1&loop=1&playlist=4Tr0otuiQuU" frameborder="0" allow="autoplay"></iframe>
+""", unsafe_allow_html=True)
+
+# ------------------------------
+# 이하 기존 로직 (TYPES, BOOKS, QUESTIONS, 함수들 등)
+# 그대로 붙여넣기
+# ------------------------------
+
+import streamlit as st
+from typing import Dict, List, Tuple
+import random
+
 st.set_page_config(page_title="독서 성향 기반 책 추천", page_icon="📚", layout="wide")
 
 # ------------------------------
