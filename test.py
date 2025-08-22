@@ -1,20 +1,31 @@
 import streamlit as st
+from typing import Dict, List
+import random
 
+# ------------------------------
 # 페이지 설정
+# ------------------------------
 st.set_page_config(
     page_title="독서 성향 기반 책 추천",
-    page_icon="📖✨",  # 감성 있는 책 이모지
+    page_icon="📖✨",
     layout="wide"
 )
 
+# ------------------------------
 # CSS + 폰트 + 배경음악
+# ------------------------------
 st.markdown("""
 <style>
-/* 전체 배경 + 글자색 */
+/* 전체 배경 + 글자 */
 .stApp {
     background-color: #26365c;
-    color: #ffffff;  /* 기본 글자 흰색 */
+    color: #ffffff;
     font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', 'Pretendard', sans-serif;
+}
+
+/* 모든 텍스트를 흰색으로 */
+* {
+    color: #ffffff !important;
 }
 
 /* 카드 스타일 */
@@ -22,28 +33,14 @@ st.markdown("""
     padding: 1rem;
     margin-bottom: 1rem;
     border-radius: 1rem;
-    background-color: rgba(255,255,255,0.08);  /* 네이비 위에 은은한 카드 */
+    background-color: rgba(255,255,255,0.08);
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    color: #ffffff;
-}
-
-/* 제목 */
-h1, h2, h3, h4, h5, h6 {
-    color: #ffffff;
-    font-weight: 600;
-    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', 'Pretendard', sans-serif;
-}
-
-/* 작은 설명글 */
-.small-note {
-    font-size: 0.9rem;
-    color: #dddddd;
 }
 
 /* 버튼 */
 .stButton > button {
     background-color: #445;
-    color: #ffffff;
+    color: #ffffff !important;
     border-radius: 12px;
     padding: 0.6rem 1.2rem;
     border: none;
@@ -54,11 +51,127 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #667;
     transform: scale(1.05);
 }
+
+/* 라디오/셀렉트박스 텍스트 색 */
+.stRadio > label, .stSelectbox > div, .stCheckbox > label {
+    color: #ffffff !important;
+}
+
+/* 작은 설명글 */
+.small-note {
+    font-size: 0.9rem;
+    color: #dddddd !important;
+}
 </style>
 
 <!-- 배경 음악 (베토벤 월광 소나타 1악장) -->
 <iframe width="0" height="0" src="https://www.youtube.com/embed/4Tr0otuiQuU?autoplay=1&loop=1&playlist=4Tr0otuiQuU" frameborder="0" allow="autoplay"></iframe>
 """, unsafe_allow_html=True)
+
+# ------------------------------
+# 데이터 정의
+# ------------------------------
+TYPES: Dict[str, str] = {
+    "감성적 몰입형": "작품 속 분위기와 감정에 깊이 빠져드는 타입",
+    "지적 탐구형": "새로운 지식과 관점을 탐구하는 것을 즐기는 타입",
+    "현실 공감형": "현실적인 문제와 삶에 공감하는 타입",
+    "모험 추구형": "새로운 세계와 스토리에 설레는 타입",
+    "휴식 힐링형": "마음을 편안하게 해주는 글을 선호하는 타입",
+    "사회 비판형": "비판적 시각으로 세상을 읽어내는 타입",
+    "자기 성장형": "스스로를 발전시키고 성찰하는 타입",
+    "유머 위로형": "웃음과 가벼운 위로를 얻는 타입",
+    "예술 감상형": "문체, 표현, 감각적인 아름다움에 집중하는 타입",
+    "관계 지향형": "인간관계와 소통 이야기에 끌리는 타입",
+}
+
+BOOKS: Dict[str, List[str]] = {
+    "감성적 몰입형": ["나미야 잡화점의 기적", "연애의 기억", "천 개의 파랑"],
+    "지적 탐구형": ["사피엔스", "총균쇠", "코스모스"],
+    "현실 공감형": ["82년생 김지영", "아몬드", "완득이"],
+    "모험 추구형": ["해리포터 시리즈", "반지의 제왕", "얼음과 불의 노래"],
+    "휴식 힐링형": ["곰돌이 푸, 행복한 일은 매일 있어", "죽고 싶지만 떡볶이는 먹고 싶어", "하루 1분 마음챙김"],
+    "사회 비판형": ["멋진 신세계", "1984", "동물 농장"],
+    "자기 성장형": ["7가지 습관", "아주 작은 습관의 힘", "미라클 모닝"],
+    "유머 위로형": ["아무튼, 개그", "정신과 간호사의 웃음 상담실", "웃음은 보약이다"],
+    "예술 감상형": ["데미안", "카라마조프가의 형제들", "인생 베이커리"],
+    "관계 지향형": ["작별인사", "인간 실격", "우리 사이 어쩌면 괜찮은"],
+}
+
+QUESTIONS = [
+    ("책을 읽을 때 가장 중요한 것은?", ["감정 이입", "새로운 지식", "현실 공감", "모험심"]),
+    ("쉬는 날 읽고 싶은 책은?", ["힐링 에세이", "사회 비판서", "자기계발서", "유머 소설"]),
+    ("책에서 가장 마음이 가는 부분은?", ["문체/예술성", "인간관계", "스토리 몰입도", "메시지/사상"]),
+    ("친구가 책을 추천해달라고 한다면?", ["감성 소설", "역사/철학", "자기계발", "판타지/모험"]),
+    ("나에게 독서는?", ["치유", "탐구", "즐거움", "성장"]),
+]
+
+# ------------------------------
+# 함수 정의
+# ------------------------------
+def run_quiz():
+    st.header("📖 성향 테스트")
+    scores = {t: 0 for t in TYPES}
+    for q, options in QUESTIONS:
+        answer = st.radio(q, options, key=q)
+        if answer in ["감정 이입", "스토리 몰입도", "감성 소설"]:
+            scores["감성적 몰입형"] += 1
+        elif answer in ["새로운 지식", "역사/철학", "탐구"]:
+            scores["지적 탐구형"] += 1
+        elif answer in ["현실 공감"]:
+            scores["현실 공감형"] += 1
+        elif answer in ["모험심", "판타지/모험"]:
+            scores["모험 추구형"] += 1
+        elif answer in ["힐링 에세이", "치유"]:
+            scores["휴식 힐링형"] += 1
+        elif answer in ["사회 비판서", "메시지/사상"]:
+            scores["사회 비판형"] += 1
+        elif answer in ["자기계발서", "성장"]:
+            scores["자기 성장형"] += 1
+        elif answer in ["유머 소설", "즐거움"]:
+            scores["유머 위로형"] += 1
+        elif answer in ["문체/예술성"]:
+            scores["예술 감상형"] += 1
+        elif answer in ["인간관계"]:
+            scores["관계 지향형"] += 1
+
+    if st.button("결과 보기 ✨"):
+        top = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:2]
+        for t, _ in top:
+            st.subheader(f"🌟 {t}")
+            st.write(TYPES[t])
+            st.write("추천 도서:", ", ".join(BOOKS[t]))
+
+def run_recommend_by_genre():
+    st.header("📚 장르별 추천")
+    genre = st.selectbox("관심 있는 성향을 선택하세요", list(BOOKS.keys()))
+    st.subheader(f"✨ {genre} 추천 도서")
+    for book in BOOKS[genre]:
+        st.markdown(f"<div class='card'>{book}</div>", unsafe_allow_html=True)
+
+def run_free_input():
+    st.header("🖊️ 자유 입력 기반 추천")
+    keyword = st.text_input("최근 읽은 책이나 관심 있는 키워드를 입력하세요")
+    if keyword:
+        all_books = [b for books in BOOKS.values() for b in books]
+        suggestions = random.sample(all_books, 3)
+        st.write("당신을 위한 추천 도서:")
+        for s in suggestions:
+            st.markdown(f"<div class='card'>{s}</div>", unsafe_allow_html=True)
+
+# ------------------------------
+# 메인 앱
+# ------------------------------
+st.title("📖✨ 독서 성향 기반 책 추천 웹앱")
+
+menu = st.sidebar.radio("메뉴 선택", ["성향 테스트", "장르별 추천", "자유 입력 추천"])
+
+if menu == "성향 테스트":
+    run_quiz()
+elif menu == "장르별 추천":
+    run_recommend_by_genre()
+else:
+    run_free_input()
+
 
 import streamlit as st
 from typing import Dict, List, Tuple
