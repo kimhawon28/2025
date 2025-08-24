@@ -1,5 +1,5 @@
 import streamlit as st
-from typing import Dict, List
+from typing import Dict, List, Tuple
 import random
 
 # ------------------------------
@@ -8,68 +8,106 @@ import random
 st.set_page_config(
     page_title="독서 성향 기반 책 추천",
     page_icon="📖✨",
-    layout="wide"
+    layout="wide",
 )
 
 # ------------------------------
-# CSS + 폰트 + 배경음악
+# 전역 스타일 / 폰트 / BGM
 # ------------------------------
 st.markdown("""
 <style>
-/* 전체 배경 */
+/* 기본 배경과 본문 텍스트 (흰색) */
 .stApp {
     background-color: #26365c;
-    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', 'Pretendard', sans-serif;
+    color: #ffffff;
+    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 }
 
-/* 일반 텍스트는 흰색 */
-.stApp, .stMarkdown, h1, h2, h3, h4, h5, h6, p, label {
-    color: #ffffff !important;
+/* 본문 내 제목/문단을 흰색으로 고정 */
+h1, h2, h3, h4, h5, h6,
+.stMarkdown p, .stMarkdown li, .stMarkdown span, .stMarkdown div {
+    color: #ffffff;
 }
 
 /* 카드 스타일 */
 .card {
     padding: 1rem;
-    margin-bottom: 1rem;
     border-radius: 1rem;
     background-color: rgba(255,255,255,0.08);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 0.8rem;
+}
+
+/* 작은 설명 텍스트 */
+.small-note {
+    font-size: 0.9rem;
+    color: #dddddd;
 }
 
 /* 버튼 */
 .stButton > button {
-    background-color: #445;
+    background-color: #445 !important;
     color: #ffffff !important;
-    border-radius: 12px;
-    padding: 0.6rem 1.2rem;
-    border: none;
-    font-weight: bold;
-    transition: 0.3s;
+    border-radius: 12px !important;
+    padding: 0.6rem 1.2rem !important;
+    border: none !important;
+    font-weight: 700 !important;
+    transition: transform 0.2s ease;
 }
 .stButton > button:hover {
-    background-color: #667;
-    transform: scale(1.05);
+    background-color: #667 !important;
+    transform: scale(1.03);
 }
 
-/* 라디오/셀렉트박스 항목 색상 */
-.stRadio > label, .stSelectbox > div, .stCheckbox > label {
+/* ===== 메인 영역 위젯 텍스트: 흰색 ===== */
+div[data-testid="stRadio"] label,
+div[data-testid="stSelectbox"] label,
+div[data-baseweb="radio"] *:not(input),
+div[role="radiogroup"] label,
+div[data-testid="stMarkdownContainer"] * {
     color: #ffffff !important;
 }
 
-/* ===== 입력창 내부 글자/메뉴 글자 (검정색) ===== */
-input, textarea, select, .stTextInput input, .stSelectbox div[data-baseweb="select"] * {
+/* ===== 입력창 내부 텍스트/placeholder: 검정 ===== */
+.stTextInput input,
+.stTextArea textarea,
+.stSelectbox [role="combobox"] input,
+.stNumberInput input,
+.stDateInput input,
+.stTimeInput input,
+.stMultiSelect input {
+    color: #000000 !important;
+    background: #ffffff !important;
+}
+.stTextInput input::placeholder,
+.stTextArea textarea::placeholder {
+    color: rgba(0,0,0,0.55) !important;
+}
+
+/* select 드롭다운 옵션(팝오버) 검정 */
+[data-baseweb="popover"] * {
     color: #000000 !important;
 }
 
-/* 사이드바 메뉴 텍스트는 검정 */
-section[data-testid="stSidebar"] .stRadio label {
+/* ===== 사이드바: 배경 밝게 + 모든 텍스트 검정 ===== */
+section[data-testid="stSidebar"] {
+    background-color: #f7f8fa !important;
+}
+section[data-testid="stSidebar"] * {
     color: #000000 !important;
+}
+
+/* 사이드바의 라디오 선택지 강조 */
+section[data-testid="stSidebar"] [data-baseweb="radio"] label {
+    font-weight: 600 !important;
 }
 </style>
 
-<!-- 배경 음악 (베토벤 월광 소나타 1악장) -->
-<iframe width="0" height="0" src="https://www.youtube.com/embed/4Tr0otuiQuU?autoplay=1&loop=1&playlist=4Tr0otuiQuU" frameborder="0" allow="autoplay"></iframe>
+<!-- 배경 음악: 베토벤 월광 소나타 1악장 (자동재생/반복) -->
+<audio autoplay loop style="display:none">
+  <source src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Beethoven_Moonlight_1st_movement.ogg" type="audio/ogg">
+</audio>
 """, unsafe_allow_html=True)
 
 # ------------------------------
