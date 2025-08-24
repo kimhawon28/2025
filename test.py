@@ -431,6 +431,5 @@ elif menu == "내 리스트 기반(간단)":
                 )
 
 # 푸터
-st.write("
-")
+st.write(" ")
 st.caption("ⓒ 독서 성향 10유형 · Streamlit Demo · 로컬 데이터 기반 예시")
