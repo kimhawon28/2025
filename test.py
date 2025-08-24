@@ -43,16 +43,16 @@ def to_dt(d: date, hm_str):
     else:
         raise ValueError(f"지원하지 않는 시간 형식: {hm_str} (type={type(hm_str)})")
 
-def fmt_hm(minutes: int) -> str:
-    """분(minute) 단위를 'HH:MM' 문자열로 변환"""
+def fmt_hm(minutes):
+    """분 단위를 HH:MM 문자열로 변환"""
     if pd.isna(minutes):
         return ""
     try:
         minutes = int(minutes)
         h, m = divmod(minutes, 60)
         return f"{h:02d}:{m:02d}"
-    except Exception as e:
-        return str(minutes)  # 혹시 숫자가 아닌 값이 들어오면 그대로 반환
+    except Exception:
+        return str(minutes)
 
 # -------------------------
 # Example: 하루의 바쁜 구간 계산
