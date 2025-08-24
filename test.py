@@ -4,7 +4,7 @@ import requests
 st.title("📚 도서 추천 앱 (네이버 API)")
 
 # 사용자 입력
-keyword = st.text_input("관심 있는 키워드를 입력하세요 (예: 행정학, 심리학, 경제학)")
+keyword = st.text_input("관심 있는 키워드를 입력하세요 (예: 행정학, 심리학, 소설, 에세이)")
 
 if keyword:
     url = "https://openapi.naver.com/v1/search/book.json"
@@ -12,7 +12,7 @@ if keyword:
         "X-Naver-Client-Id": "ZpjV3RrEyIOBNZ0CkqPM",        # 🔑 발급받은 Client ID
         "X-Naver-Client-Secret": "Yv857utsaI" # 🔑 발급받은 Client Secret
     }
-    params = {"query": keyword, "display": 5}  # 최대 5권 추천
+    params = {"query": keyword, "display": 10}  # 최대 10권 추천
 
     response = requests.get(url, headers=headers, params=params)
 
