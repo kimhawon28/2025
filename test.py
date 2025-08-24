@@ -402,7 +402,7 @@ elif menu == "내 리스트 기반(간단)":
     k = st.slider("추천 개수", 3, 10, 5, key="mine_k")
 
     if st.button("추천 생성"):
-        if not user_text.strip():
+        if not text.strip():
             st.warning("한 줄 이상 입력해 주세요.")
         else:
             tokens = [t.strip().lower() for t in user_text.splitlines() if t.strip()]
