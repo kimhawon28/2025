@@ -455,6 +455,29 @@ elif menu == "내 리스트 기반(간단)":
                     f"<div class='card'><b>{b['title']}</b> · {b['author']}<br><span class='small-note'>추천 이유: {b['reason']}</span></div>",
                     unsafe_allow_html=True,
                 )
+# 키워드 온라인 추천 (구글북스 API)
+elif menu == "키워드 온라인 추천":
+    st.header("🌐 인터넷 기반 키워드 추천 (Google Books API)")
+    keyword = st.text_input("관심 키워드를 입력하세요", placeholder="예) 인공지능, 역사, 심리학")
+
+    if st.button("온라인 추천 가져오기"):
+        if not keyword.strip():
+            st.warning("키워드를 입력해주세요.")
+        else:
+            try:
+                recs = recommend_by_keyword_api(keyword, max_results=6)
+                if not recs:
+                    st.info("관련 도서를 찾지 못했어요. 다른 키워드를 입력해 보세요.")
+                else:
+                    st.subheader("추천 결과")
+                    for r in recs:
+                        st.markdown(
+                            f"<div class='card'><b>{r['title']}</b> · {r['authors']}<br>"
+                            f"<span class='small-note'>{r['description'][:100]}...</span></div>",
+                            unsafe_allow_html=True,
+                        )
+            except Exception as e:
+                st.error(f"검색 중 오류가 발생했습니다: {e}")
 
 # 푸터
 st.write(" ")
