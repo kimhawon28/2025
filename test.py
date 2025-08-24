@@ -2,35 +2,34 @@ import streamlit as st
 from typing import Dict, List, Tuple
 import random
 
-# ==============================
+# ------------------------------
 # 페이지 설정
-# ==============================
+# ------------------------------
 st.set_page_config(
     page_title="독서 성향 기반 책 추천",
     page_icon="📖✨",
     layout="wide",
 )
 
-# ==============================
+# ------------------------------
 # 전역 스타일 / 폰트 / BGM
-# ==============================
-st.markdown(
-    """
+# ------------------------------
+st.markdown("""
 <style>
-/* ===== 앱 배경 & 본문 텍스트 ===== */
+/* 기본 배경과 본문 텍스트 (흰색) */
 .stApp {
-    background-color: #26365c; /* 남색 계열 다크톤 */
+    background-color: #26365c;
     color: #ffffff;
-    font-family: 'Arial Rounded MT Bold','Helvetica Rounded','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+    font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
 }
 
-/* 본문 내 텍스트는 흰색 고정 */
+/* 본문 내 제목/문단을 흰색으로 고정 */
 h1, h2, h3, h4, h5, h6,
 .stMarkdown p, .stMarkdown li, .stMarkdown span, .stMarkdown div {
     color: #ffffff;
 }
 
-/* 카드 컴포넌트 스타일 */
+/* 카드 스타일 */
 .card {
     padding: 1rem;
     border-radius: 1rem;
@@ -39,9 +38,14 @@ h1, h2, h3, h4, h5, h6,
     border: 1px solid rgba(255,255,255,0.12);
     margin-bottom: 0.8rem;
 }
-.small-note { font-size: 0.9rem; color: #dddddd; }
 
-/* 버튼 스타일 */
+/* 작은 설명 텍스트 */
+.small-note {
+    font-size: 0.9rem;
+    color: #dddddd;
+}
+
+/* 버튼 */
 .stButton > button {
     background-color: #445 !important;
     color: #ffffff !important;
@@ -51,7 +55,19 @@ h1, h2, h3, h4, h5, h6,
     font-weight: 700 !important;
     transition: transform 0.2s ease;
 }
-.stButton > button:hover { background-color: #667 !important; transform: scale(1.03); }
+.stButton > button:hover {
+    background-color: #667 !important;
+    transform: scale(1.03);
+}
+
+/* ===== 메인 영역 위젯 텍스트: 흰색 ===== */
+div[data-testid="stRadio"] label,
+div[data-testid="stSelectbox"] label,
+div[data-baseweb="radio"] *:not(input),
+div[role="radiogroup"] label,
+div[data-testid="stMarkdownContainer"] * {
+    color: #ffffff !important;
+}
 
 /* ===== 입력창 내부 텍스트/placeholder: 검정 ===== */
 .stTextInput input,
@@ -65,24 +81,34 @@ h1, h2, h3, h4, h5, h6,
     background: #ffffff !important;
 }
 .stTextInput input::placeholder,
-.stTextArea textarea::placeholder { color: rgba(0,0,0,0.55) !important; }
+.stTextArea textarea::placeholder {
+    color: rgba(0,0,0,0.55) !important;
+}
 
-/* select 드롭다운 옵션(팝오버) 텍스트: 검정 */
-[data-baseweb="popover"] * { color: #000000 !important; }
+/* select 드롭다운 옵션(팝오버) 검정 */
+[data-baseweb="popover"] * {
+    color: #000000 !important;
+}
 
-/* ===== 사이드바: 배경 밝게 + 텍스트 검정 ===== */
-section[data-testid="stSidebar"] { background-color: #f7f8fa !important; }
-section[data-testid="stSidebar"] * { color: #000000 !important; }
-section[data-testid="stSidebar"] [data-baseweb="radio"] label { font-weight: 600 !important; }
+/* ===== 사이드바: 배경 밝게 + 모든 텍스트 검정 ===== */
+section[data-testid="stSidebar"] {
+    background-color: #f7f8fa !important;
+}
+section[data-testid="stSidebar"] * {
+    color: #000000 !important;
+}
+
+/* 사이드바의 라디오 선택지 강조 */
+section[data-testid="stSidebar"] [data-baseweb="radio"] label {
+    font-weight: 600 !important;
+}
 </style>
 
 <!-- 배경 음악: 베토벤 월광 소나타 1악장 (자동재생/반복) -->
 <audio autoplay loop style="display:none">
   <source src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Beethoven_Moonlight_1st_movement.ogg" type="audio/ogg">
 </audio>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
 # ==============================
 # 데이터 정의 (10유형 + 책 데이터)
