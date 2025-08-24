@@ -23,11 +23,6 @@ import requests
 from io import BytesIO
 from fpdf import FPDF
 
-from datetime import datetime
-
-def to_dt(d, hm_str: str):
-    """주어진 날짜 d(date)와 'HH:MM' 문자열을 datetime으로 변환"""
-    return datetime.combine(d, datetime.strptime(hm_str, "%H:%M").time())
 
 
 # -----------------------------
