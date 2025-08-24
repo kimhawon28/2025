@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-st.set_page_config(page_title="독서 성향 테스트 & 도서 검색", layout="centered")
+st.set_page_config(page_title="책과 친해지기", layout="centered")
 st.title("📚 책과 친해지기")
 
 # --- 탭 생성 ---
