@@ -105,8 +105,8 @@ BOOKS: Dict[str, List[Dict]] = {
         {"title": "아몬드", "author": "손원평", "reason": "섬세한 감정선과 성장."},
         {"title": "연의 편지", "author": "조현아", "reason": "잔잔한 위로와 울림."},
         {"title": "작별인사", "author": "김영하", "reason": "따뜻함과 상실의 여운."},
-        {"title": "무례한 사람에게 웃으며 대처하는 법", "author": "정문정", "reason": "마음 근육을 단단하게."},
         {"title": "달러구트 꿈 백화점", "author": "이미예", "reason": "아늑하고 몽환적인 위로."},
+        {"title": "우리가 빛의 속도로 갈 수 없다면", "author": "김초엽", "reason": "다정한 SF의 위로."},
     ],
     "지식 탐구형": [
         {"title": "이기적 유전자", "author": "리처드 도킨스", "reason": "진화론의 시각 확대."},
@@ -118,9 +118,9 @@ BOOKS: Dict[str, List[Dict]] = {
     "현실 적용형": [
         {"title": "원씽", "author": "게리 켈러", "reason": "핵심에 집중하는 법."},
         {"title": "아주 작은 습관의 힘", "author": "제임스 클리어", "reason": "작은 변화의 누적."},
-        {"title": "하버드 상위 1%의 비밀", "author": "정주영", "reason": "실전 생산성 팁."},
         {"title": "린 스타트업", "author": "에릭 리스", "reason": "사업/프로젝트 실행."},
         {"title": "초집중", "author": "니르 에얄", "reason": "주의관리와 실천."},
+        {"title": "하버드 상위 1%의 비밀", "author": "정주영", "reason": "실전 생산성 팁."},
     ],
     "스토리 몰입형": [
         {"title": "해리 포터", "author": "J.K. 롤링", "reason": "성장과 우정, 모험."},
@@ -159,10 +159,10 @@ BOOKS: Dict[str, List[Dict]] = {
     ],
     "사회 참여형": [
         {"title": "팩트풀니스", "author": "한스 로슬링", "reason": "데이터로 보는 세상."},
-        {"title": "야성의 부르짖음", "author": "잭 런던", "reason": "불평등과 생존의 상징적 서사."},
-        {"title": "우리는 왜 분노하는가", "author": "마사 누스바움", "reason": "감정과 정의."},
         {"title": "난장이가 쏘아올린 작은 공", "author": "조세희", "reason": "불평등의 기록."},
-        {"title": "대도시의 사랑법", "author": "박상영", "reason": "동시대의 목소리."},
+        {"title": "우리는 왜 분노하는가", "author": "마사 누스바움", "reason": "감정과 정의."},
+        {"title": "정의란 무엇인가", "author": "마이클 샌델", "reason": "공정과 정의의 기준."},
+        {"title": "그 많던 싱아는 누가 다 먹었을까", "author": "박완서", "reason": "시대와 생활의 증언."},
     ],
     "가벼운 즐김형": [
         {"title": "달러구트 꿈 백화점 2", "author": "이미예", "reason": "편하게 이어 읽기."},
@@ -283,7 +283,7 @@ with st.sidebar:
     menu = st.radio("메뉴", ["홈", "성향 테스트", "장르별 추천", "내 리스트 기반(간단)"])
     st.caption("한글 10유형 기반 맞춤 추천")
 
-# 추가 카드/보조 스타일
+# 추가 카드/보조 스타일 (보정)
 st.markdown(
     """
 <style>
@@ -370,7 +370,7 @@ elif menu == "내 리스트 기반(간단)":
     st.header("📝 최근 읽은 책/키워드 기반 간단 추천")
     user_text = st.text_area(
         "최근 읽은 책 제목/키워드(줄바꿈으로 구분)",
-        placeholder="예) 달러구트 꿈 백화점")
+        placeholder="예) 달러구트 꿈 백화점
 역행자
 철학
 위로",
