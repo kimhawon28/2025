@@ -687,7 +687,7 @@ def fmt_hm(dt):
     return dt.strftime("%H:%M")
 
 
-   pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
+pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
 
 st.download_button(
     label="📥 월간 학습 다이어리 PDF 다운로드",
