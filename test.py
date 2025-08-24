@@ -649,7 +649,7 @@ from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 
 # 📌 PDF 생성 함수
 pdf_file = make_monthly_calendar_pdf(year, month, plan_scoped_df)
-    buffer = BytesIO()
+buffer = BytesIO()
 
     # 한글 폰트 등록
     pdfmetrics.registerFont(UnicodeCIDFont('HYSMyeongJo-Medium'))
