@@ -702,8 +702,8 @@ story.append(table)
 
     # PDF 만들기
 doc.build(story)
-buffer.seek(0)
-return buffer
+  buffer.seek(0)
+  return buffer
 
 
 # 📌 Streamlit 앱
