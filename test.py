@@ -18,6 +18,36 @@ from typing import List, Dict, Tuple, Optional
 import numpy as np
 import pandas as pd
 import streamlit as st
+
+from datetime import datetime, date, time, timedelta
+
+# -------------------------
+# Utility: 문자열/숫자/시간 -> datetime 변환
+# -------------------------
+def to_dt(d: date, hm_str):
+    """주어진 날짜 d(date)와 'HH:MM' 문자열/시간 객체/숫자를 datetime으로 변환"""
+    if isinstance(hm_str, str):
+        return datetime.combine(d, datetime.strptime(hm_str, "%H:%M").time())
+    elif isinstance(hm_str, datetime):
+        return hm_str
+    elif hasattr(hm_str, "hour"):  # time 객체 같은 것
+        return datetime.combine(d, hm_str)
+    elif isinstance(hm_str, (int, float)):  # 분 단위 숫자일 때
+        h, m = divmod(int(hm_str), 60)
+        return datetime.combine(d, time(hour=h, minute=m))
+    else:
+        raise ValueError(f"지원하지 않는 시간 형식: {hm_str} (type={type(hm_str)})")
+
+# -------------------------
+# Example: 하루의 바쁜 구간 계산
+# -------------------------
+def build_busy_intervals_for_day(d: date):
+    day_start = "08:00"
+    day_end = "22:00"
+    # ✅ 여기서 to_dt 호출
+    day_s, day_e = to_dt(d, day_start), to_dt(d, day_end)
+    return [(day_s, day_e)], []  # (예시로 전체 구간 바쁨 처리)
+
 import os
 import requests
 from io import BytesIO
