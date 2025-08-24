@@ -641,11 +641,9 @@ with right:
 
 # -----------------------------
 # 다운로드
-# -----------------------------
-# -----------------------------
-# 다운로드
-# -----------------------------
 st.subheader("📥 다운로드")
+
+# CSV 다운로드
 plan_csv = plan_scoped_df.copy()
 plan_csv["분(표시)"] = plan_csv["분"].apply(fmt_hm)
 st.download_button(
@@ -655,32 +653,11 @@ st.download_button(
     mime="text/csv"
 )
 
-# === PDF 생성 함수 추가 ===
-from fpdf import FPDF
-from io import BytesIO
-
-def make_calendar_pdf(all_days, plan_scoped_df):
-    from fpdf import FPDF
-from io import BytesIO
-
-# ✅ 한글 + 이모지 출력 가능하도록 폰트 설정
-def ensure_font(pdf):
-    # NotoSansCJK (구글 무료 폰트) 사용 → 한글 지원
-    pdf.add_font("NotoSans", "", fname="/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc", uni=True)
-    pdf.set_font("NotoSans", "", 12)
-    return pdf
-
-# ✅ 시각 포맷 함수 (09:00 같은 형태)
-def fmt_hm(dt):
-    return dt.strftime("%H:%M")
-
-
-pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
-
+# PDF 다운로드
+pdf_bytes = make_calendar_pdf(all_days, plan_scoped_df)
 st.download_button(
     label="📥 월간 학습 다이어리 PDF 다운로드",
-    data=pdf_buffer,
+    data=pdf_bytes,
     file_name="study_calendar.pdf",
     mime="application/pdf"
 )
-
