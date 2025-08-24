@@ -169,7 +169,7 @@ with colA:
 with colB:
     if st.button("예시 과목 불러오기", use_container_width=True):
         st.session_state["subjects_df"] = example_subject_df()
-        st.experimental_rerun()
+        st.rerun()
 
 # 전처리/유효성
 subjects_df = subjects_df.copy()
