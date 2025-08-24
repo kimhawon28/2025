@@ -18,6 +18,10 @@ from typing import List, Dict, Tuple, Optional
 import numpy as np
 import pandas as pd
 import streamlit as st
+import os
+import requests
+from io import BytesIO
+from fpdf import FPDF
 
 # -----------------------------
 # 기본 설정
