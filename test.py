@@ -40,17 +40,26 @@ def round5(m: int) -> int:
     return int(round(m/5)*5)
 
 
-def fmt_hm(m: int) -> str:
-    """분 → 'X시간 Y분' (5분 스냅)"""
-    if m <= 0:
+def fmt_hm(dt):
+    """
+    dt가 datetime이면 HH:MM 문자열 반환
+    int(분 단위)면 HH:MM으로 변환해서 반환
+    """
+    import pandas as pd
+    import datetime
+
+    if pd.isna(dt):
         return ""
-    m = round5(m)
-    h, mm = divmod(m, 60)
-    if h and mm:
-        return f"{h}시간 {mm}분"
-    if h:
-        return f"{h}시간"
-    return f"{mm}분"
+
+    if hasattr(dt, "strftime"):  # datetime 같은 객체
+        return dt.strftime("%H:%M")
+
+    if isinstance(dt, (int, float)):  # 분 단위 숫자
+        hours, mins = divmod(int(dt), 60)
+        return f"{hours:02d}:{mins:02d}"
+
+    return str(dt)  # 기타 타입 fallback
+
 
 
 def to_dt(d: date, t: time) -> datetime:
