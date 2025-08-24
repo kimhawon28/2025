@@ -376,7 +376,7 @@ for d in all_days:
         fixed_alloc[subj] = fixed_alloc.get(subj,0) + round5(int(round(share)))
 
     # 3) 자동 배분
-    auto_df = subjects_df[pd.isna(subjects_df["목표 총 학습시간(시간)")]]
+    auto_df = subjects_df[pd.isna(subjects_df["목표 총 학습시간(시간)"])]
     auto_weights = compute_daily_weights(d, auto_df)
     remain = max(0, day_cap - sum(fixed_alloc.values()))
     auto_alloc: Dict[str,int] = {}
