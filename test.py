@@ -80,6 +80,28 @@ def parse_range_text(text: str) -> List[str]:
     # 콤마 분리
     parts = [p for p in re.split(r"[,/]", s) if p]
     return parts or []
+def fmt_hm(minutes: int):
+    """분 -> '1시간 20분' 같은 문자열 변환"""
+    h, m = divmod(minutes, 60)
+    if h and m:
+        return f"{h}시간 {m}분"
+    elif h:
+        return f"{h}시간"
+    else:
+        return f"{m}분"
+
+WEEK_LABEL = ["월", "화", "수", "목", "금", "토", "일"]
+
+def ensure_font():
+    """NotoSansKR-Regular.otf 없으면 자동 다운로드"""
+    font_url = "https://github.com/googlefonts/noto-cjk/raw/main/Sans/OTF/Korean/NotoSansKR-Regular.otf"
+    font_path = "NotoSansKR-Regular.otf"
+    if not os.path.exists(font_path):
+        print("👉 NotoSansKR-Regular.otf 다운로드 중...")
+        r = requests.get(font_url)
+        with open(font_path, "wb") as f:
+            f.write(r.content)
+    return font_path
 
 
 # -----------------------------
@@ -590,54 +612,50 @@ from io import BytesIO
 def make_calendar_pdf(all_days, plan_scoped_df):
     pdf = FPDF(orientation="L", unit="mm", format="A4")
     pdf.add_page()
-    pdf.set_font("Arial", "B", 16)
+
+    # ✅ 한글/이모지 폰트 등록
+    font_path = ensure_font()
+    pdf.add_font("NotoSans", fname=font_path, uni=True)
+    pdf.set_font("NotoSans", "", 16)
+
+    # 제목
     pdf.cell(0, 10, "📅 학습 다이어리 (월간 달력)", ln=True, align="C")
     pdf.ln(5)
 
     # 요일 헤더
     col_w = 40
     row_h = 20
-    pdf.set_font("Arial", "B", 12)
+    pdf.set_font("NotoSans", "B", 12)
     for w in WEEK_LABEL:
         pdf.cell(col_w, 10, w, border=1, align="C")
     pdf.ln()
 
-    # 날짜별 칸 채우기
-    pdf.set_font("Arial", "", 9)
+    # 날짜별 칸
+    pdf.set_font("NotoSans", "", 9)
     cur_weekday = all_days[0].weekday()
-    # 빈칸 (달력 앞부분)
     for _ in range(cur_weekday):
         pdf.cell(col_w, row_h, "", border=1)
 
-    for i, d in enumerate(all_days):
+    for d in all_days:
         cell_text = f"{d.day}\n"
         day_rows = plan_scoped_df[plan_scoped_df["날짜"] == d]
+
         for _, r in day_rows.iterrows():
             subj = r["과목"]
             rg = r["범위"]
             mins = fmt_hm(int(r["분"]))
             cell_text += f"- {subj}:{rg}({mins})\n"
 
-        # 셀 출력
         x, y = pdf.get_x(), pdf.get_y()
         pdf.multi_cell(col_w, 5, cell_text.strip(), border=1)
         pdf.set_xy(x + col_w, y)
 
-        # 주말 끝나면 줄바꿈
-        if (d.weekday() == 6):
+        if d.weekday() == 6:  # 일요일 끝나면 줄바꿈
             pdf.ln(row_h - 5)
 
     buffer = BytesIO()
     pdf.output(buffer)
     buffer.seek(0)
     return buffer
-
-pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
-st.download_button(
-    "🗓️ 월간 달력 PDF",
-    data=pdf_buffer,
-    file_name="study_calendar.pdf",
-    mime="application/pdf"
-)
 
 st.success("✅ 계획 생성 완료! CSV와 PDF 달력으로 다운로드할 수 있습니다.")
