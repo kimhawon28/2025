@@ -261,7 +261,7 @@ for d in all_days:
             fixed_alloc[subj] = (fixed_total / total_available_hours) * day_hours
 
     # 자동 배분 대상
-    auto_df = subjects_df[pd.isna(subjects_df["목표 총 학습시간(시간)")]]
+    auto_df = subjects_df[pd.isna(subjects_df["목표 총 학습시간(시간)"])]
     auto_weights = compute_daily_weights(d, auto_df)
 
     auto_alloc = {}
