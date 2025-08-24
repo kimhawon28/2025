@@ -648,7 +648,7 @@ from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 
 
 # 📌 PDF 생성 함수
-def pdf_file = make_monthly_calendar_pdf(year, month, plan_scoped_df):
+pdf_file = make_monthly_calendar_pdf(year, month, plan_scoped_df):
     buffer = BytesIO()
 
     # 한글 폰트 등록
