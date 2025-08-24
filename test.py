@@ -26,6 +26,12 @@ from fpdf import FPDF
 
 from datetime import datetime, date, time
 
+import calendar
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+
 
 # -------------------------
 # Utility: 문자열/숫자/시간 -> datetime 변환
@@ -642,7 +648,7 @@ from reportlab.pdfbase.cidfonts import UnicodeCIDFont
 
 
 # 📌 PDF 생성 함수
-def make_calendar_pdf(all_days, plan_scoped_df):
+def pdf_file = make_monthly_calendar_pdf(year, month, plan_scoped_df):
     buffer = BytesIO()
 
     # 한글 폰트 등록
@@ -716,7 +722,10 @@ plan_scoped_df = pd.DataFrame([
 
 # PDF 생성 버튼
 if st.button("📥 PDF 생성하기"):
-    pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
+    pdf_file = make_monthly_calendar_pdf(year, month, plan_scoped_df)
+    with open(pdf_file, "rb") as f:
+    st.download_button("📥 월간 달력 PDF 다운로드", f, file_name="calendar.pdf")
+
     st.download_button(
         label="📥 PDF 다운로드",
         data=pdf_buffer,
