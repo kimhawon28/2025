@@ -628,96 +628,98 @@ def fmt_hm(minutes):
         return str(minutes)
 
 
-def make_calendar_pdf(all_days, plan_df):
-    pdf = FPDF()
-    pdf.add_page()
+import streamlit as st
+import pandas as pd
+from datetime import datetime, timedelta
+from io import BytesIO
 
-    # ✅ 한글/이모지 지원 폰트 등록
-    # NotoSansCJK (또는 NanumGothic 등) TTF 경로 필요
-    # 로컬 또는 서버에 설치된 폰트 경로 확인 필요
-    font_path = "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"
-    if os.path.exists(font_path):
-        pdf.add_font("NotoSans", "", font_path, uni=True)
-        pdf.set_font("NotoSans", size=16)
-    else:
-        # fallback (서버에 폰트 없는 경우)
-        pdf.set_font("Arial", size=16)
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib import colors
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+
+
+# 📌 PDF 생성 함수
+def make_calendar_pdf(all_days, plan_scoped_df):
+    buffer = BytesIO()
+
+    # 한글 폰트 등록
+    pdfmetrics.registerFont(UnicodeCIDFont('HYSMyeongJo-Medium'))
+
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    story = []
+
+    # 스타일
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        "Title",
+        parent=styles["Heading1"],
+        fontName="HYSMyeongJo-Medium",
+        fontSize=18,
+        alignment=1,
+    )
+    normal_style = ParagraphStyle(
+        "Normal",
+        parent=styles["Normal"],
+        fontName="HYSMyeongJo-Medium",
+        fontSize=12,
+    )
 
     # 제목
-    pdf.cell(0, 10, "📅 학습 다이어리 (월간 달력)", ln=True, align="C")
-    pdf.ln(5)
+    story.append(Paragraph("📅 학습 다이어리 (월간 달력)", title_style))
+    story.append(Spacer(1, 20))
 
-    # 요일 헤더
-    pdf.set_font("NotoSans", "", 12) if "NotoSans" in pdf.fonts else pdf.set_font("Arial", size=12)
-    weekdays = ["월", "화", "수", "목", "금", "토", "일"]
-    col_w = 277 / 7  # A4 가로폭
-    row_h = 30
-    for wd in weekdays:
-        pdf.cell(col_w, 10, wd, border=1, align="C")
-    pdf.ln()
-
-    # 날짜별 박스
-    day_idx = 0
-    for week in range(6):  # 최대 6주
-        for wd in range(7):
-            if day_idx < len(all_days):
-                d = all_days[day_idx]
-                events = plan_df[plan_df["날짜"] == d]
-                cell_text = f"{d.day}\n"
-                for _, ev in events.iterrows():
-                    stime = fmt_hm(ev["시작"])
-                    etime = fmt_hm(ev["끝"])
-                    title = ev["과목"]
-                    detail = ev.get("세부", "")
-                    duration = int((ev["끝"] - ev["시작"]).total_seconds() // 60)
-                    hours, mins = divmod(duration, 60)
-                    dur_str = f"{hours}시간 {mins}분" if hours else f"{mins}분"
-                    cell_text += f"{stime}~{etime} {title} {detail} ({dur_str})\n"
-                pdf.multi_cell(col_w, 5, cell_text, border=1)
-            else:
-                pdf.cell(col_w, row_h, "", border=1)
-            day_idx += 1
-        pdf.ln()
-
-    # PDF를 Bytes로 반환
-    pdf_bytes = pdf.output(dest="S").encode("latin1")
-    return pdf_bytes
-
-# -----------------------------
-# 좌: 요약, 우: 다이어리 미리보기(전체 기간)
-# -----------------------------
-left, right = st.columns([1,2])
-with left:
-    st.subheader("📊 과목별 총 배정")
-    summary = plan_minutes_df.groupby("과목")["분"].sum().reset_index().sort_values("분", ascending=False)
-    summary["표시"] = summary["분"].apply(fmt_hm)
-    st.dataframe(summary.rename(columns={"분":"총 분", "표시":"총 시간"}), use_container_width=True)
-
-with right:
-    st.subheader("🗓️ 다이어리 보기")
+    # 일정 테이블
+    data = [["날짜", "일정"]]
     for d in all_days:
-        tl_df, ev_lines = make_day_timeline(d, plan_scoped_df)
-        render_day_diary(d, tl_df, ev_lines)
+        daily_plan = plan_scoped_df[plan_scoped_df["날짜"] == d.strftime("%Y-%m-%d")]
+        if daily_plan.empty:
+            data.append([d.strftime("%m/%d (%a)"), ""])
+        else:
+            schedules = []
+            for _, row in daily_plan.iterrows():
+                schedules.append(f"{row['시작']}~{row['종료']} {row['과목']}")
+            data.append([d.strftime("%m/%d (%a)"), "<br/>".join(schedules)])
 
-# -----------------------------
-# 다운로드
-st.subheader("📥 다운로드")
+    table = Table(data, colWidths=[100, 350])
+    table.setStyle(TableStyle([
+        ("FONTNAME", (0, 0), (-1, -1), "HYSMyeongJo-Medium"),
+        ("FONTSIZE", (0, 0), (-1, -1), 10),
+        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+        ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+        ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+    ]))
+    story.append(table)
 
-# CSV 다운로드
-plan_csv = plan_scoped_df.copy()
-plan_csv["분(표시)"] = plan_csv["분"].apply(fmt_hm)
-st.download_button(
-    "과목·범위·분 CSV",
-    data=plan_csv.to_csv(index=False).encode("utf-8-sig"),
-    file_name="study_plan_scoped.csv",
-    mime="text/csv"
-)
+    # PDF 만들기
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
 
-# PDF 다운로드
-pdf_bytes = make_calendar_pdf(all_days, plan_scoped_df)
-st.download_button(
-    label="📥 월간 학습 다이어리 PDF 다운로드",
-    data=pdf_bytes,
-    file_name="study_calendar.pdf",
-    mime="application/pdf"
-)
+
+# 📌 Streamlit 앱
+st.title("📅 학습 다이어리 플래너")
+
+# 예시 날짜 범위
+start_date = datetime(2025, 9, 1)
+all_days = [start_date + timedelta(days=i) for i in range(30)]
+
+# 예시 데이터프레임 (실제 앱에서는 사용자 입력 기반으로 생성됨)
+plan_scoped_df = pd.DataFrame([
+    {"날짜": "2025-09-01", "시작": "09:00", "종료": "12:00", "과목": "수학"},
+    {"날짜": "2025-09-01", "시작": "14:00", "종료": "16:00", "과목": "영어"},
+    {"날짜": "2025-09-02", "시작": "10:00", "종료": "12:00", "과목": "과학"},
+])
+
+# PDF 생성 버튼
+if st.button("📥 PDF 생성하기"):
+    pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
+    st.download_button(
+        label="📥 PDF 다운로드",
+        data=pdf_buffer,
+        file_name="calendar.pdf",
+        mime="application/pdf"
+    )
