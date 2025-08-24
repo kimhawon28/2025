@@ -724,7 +724,7 @@ plan_scoped_df = pd.DataFrame([
 if st.button("📥 PDF 생성하기"):
     pdf_file = make_monthly_calendar_pdf(year, month, plan_scoped_df)
     with open(pdf_file, "rb") as f:
-    st.download_button("📥 월간 달력 PDF 다운로드", f, file_name="calendar.pdf")
+st.download_button("📥 월간 달력 PDF 다운로드", f, file_name="calendar.pdf")
 
     st.download_button(
         label="📥 PDF 다운로드",
