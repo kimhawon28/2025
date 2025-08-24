@@ -405,7 +405,7 @@ elif menu == "내 리스트 기반(간단)":
         if not text.strip():
             st.warning("한 줄 이상 입력해 주세요.")
         else:
-            tokens = [t.strip().lower() for t in user_text.splitlines() if t.strip()]
+            tokens = [t.strip().lower() for t in text.splitlines() if t.strip()]
 
             # 매우 단순한 키워드 → 유형 매핑 규칙 (원하면 확장 가능)
             key2type = {
