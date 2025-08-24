@@ -616,8 +616,17 @@ from io import BytesIO
 import streamlit as st
 import os
 
-def fmt_hm(dt):
-    return dt.strftime("%H:%M")
+def fmt_hm(minutes):
+    """분 단위를 HH:MM 문자열로 변환"""
+    if pd.isna(minutes):
+        return ""
+    try:
+        minutes = int(minutes)
+        h, m = divmod(minutes, 60)
+        return f"{h:02d}:{m:02d}"
+    except Exception:
+        return str(minutes)
+
 
 def make_calendar_pdf(all_days, plan_df):
     pdf = FPDF()
