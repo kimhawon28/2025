@@ -572,6 +572,16 @@ def render_day_diary(d: date, tl_df: pd.DataFrame, event_lines: List[Dict]):
     outputs.sort(key=lambda x: x["start"]) 
     for o in outputs:
         st.write(o["line"])  # 라인 출력
+# PDF 생성
+pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
+
+# 다운로드 버튼
+st.download_button(
+    label="📥 월간 학습 다이어리 PDF 다운로드",
+    data=pdf_buffer,
+    file_name="study_calendar.pdf",
+    mime="application/pdf"
+)
 
 # -----------------------------
 # 좌: 요약, 우: 다이어리 미리보기(전체 기간)
