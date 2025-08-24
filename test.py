@@ -4,7 +4,7 @@ import requests
 st.title("📚 도서 추천")
 
 # 사용자 입력
-keyword = st.text_input("관심 있는 키워드를 입력하세요 ex : 행정학, 심리학, 소설, 에세이)")
+keyword = st.text_input("관심 있는 키워드를 입력하세요 ex : 행정학, 심리학, 소설, 에세이")
 
 if keyword:
     url = "https://openapi.naver.com/v1/search/book.json"
