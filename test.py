@@ -566,9 +566,74 @@ with right:
 # -----------------------------
 # 다운로드
 # -----------------------------
+# -----------------------------
+# 다운로드
+# -----------------------------
 st.subheader("📥 다운로드")
 plan_csv = plan_scoped_df.copy()
 plan_csv["분(표시)"] = plan_csv["분"].apply(fmt_hm)
-st.download_button("과목·범위·분 CSV", data=plan_csv.to_csv(index=False).encode("utf-8-sig"), file_name="study_plan_scoped.csv", mime="text/csv")
+st.download_button(
+    "과목·범위·분 CSV",
+    data=plan_csv.to_csv(index=False).encode("utf-8-sig"),
+    file_name="study_plan_scoped.csv",
+    mime="text/csv"
+)
 
-st.success("✅ 계획 생성 완료! 모든 시간은 5분 단위로 반올림되어 다이어리 스타일로 표시됩니다.")
+# === PDF 생성 함수 추가 ===
+from fpdf import FPDF
+from io import BytesIO
+
+def make_calendar_pdf(all_days, plan_scoped_df):
+    pdf = FPDF(orientation="L", unit="mm", format="A4")
+    pdf.add_page()
+    pdf.set_font("Arial", "B", 16)
+    pdf.cell(0, 10, "📅 학습 다이어리 (월간 달력)", ln=True, align="C")
+    pdf.ln(5)
+
+    # 요일 헤더
+    col_w = 40
+    row_h = 20
+    pdf.set_font("Arial", "B", 12)
+    for w in WEEK_LABEL:
+        pdf.cell(col_w, 10, w, border=1, align="C")
+    pdf.ln()
+
+    # 날짜별 칸 채우기
+    pdf.set_font("Arial", "", 9)
+    cur_weekday = all_days[0].weekday()
+    # 빈칸 (달력 앞부분)
+    for _ in range(cur_weekday):
+        pdf.cell(col_w, row_h, "", border=1)
+
+    for i, d in enumerate(all_days):
+        cell_text = f"{d.day}\n"
+        day_rows = plan_scoped_df[plan_scoped_df["날짜"] == d]
+        for _, r in day_rows.iterrows():
+            subj = r["과목"]
+            rg = r["범위"]
+            mins = fmt_hm(int(r["분"]))
+            cell_text += f"- {subj}:{rg}({mins})\n"
+
+        # 셀 출력
+        x, y = pdf.get_x(), pdf.get_y()
+        pdf.multi_cell(col_w, 5, cell_text.strip(), border=1)
+        pdf.set_xy(x + col_w, y)
+
+        # 주말 끝나면 줄바꿈
+        if (d.weekday() == 6):
+            pdf.ln(row_h - 5)
+
+    buffer = BytesIO()
+    pdf.output(buffer)
+    buffer.seek(0)
+    return buffer
+
+pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
+st.download_button(
+    "🗓️ 월간 달력 PDF",
+    data=pdf_buffer,
+    file_name="study_calendar.pdf",
+    mime="application/pdf"
+)
+
+st.success("✅ 계획 생성 완료! CSV와 PDF 달력으로 다운로드할 수 있습니다.")
