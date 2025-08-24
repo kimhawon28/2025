@@ -573,16 +573,52 @@ def render_day_diary(d: date, tl_df: pd.DataFrame, event_lines: List[Dict]):
     for o in outputs:
         st.write(o["line"])  # 라인 출력
 # PDF 생성
-pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
+# ✅ 월간 달력 PDF 생성 함수
+def make_calendar_pdf(all_days, plan_df):
+    pdf = FPDF(orientation="L", unit="mm", format="A4")
+    pdf = ensure_font(pdf)
 
-# 다운로드 버튼
-st.download_button(
-    label="📥 월간 학습 다이어리 PDF 다운로드",
-    data=pdf_buffer,
-    file_name="study_calendar.pdf",
-    mime="application/pdf"
-)
+    pdf.add_page()
+    pdf.set_font("NotoSans", "", 16)
+    pdf.cell(0, 10, "📅 학습 다이어리 (월간 달력)", ln=True, align="C")
+    pdf.ln(5)
 
+    # 요일 헤더
+    pdf.set_font("NotoSans", "", 12)
+    weekdays = ["월", "화", "수", "목", "금", "토", "일"]
+    col_w = 277 / 7  # A4 가로폭에 맞춤
+    row_h = 30
+    for wd in weekdays:
+        pdf.cell(col_w, 10, wd, border=1, align="C")
+    pdf.ln()
+
+    # 날짜별 박스
+    day_idx = 0
+    for week in range(6):  # 최대 6주
+        for wd in range(7):
+            if day_idx < len(all_days):
+                d = all_days[day_idx]
+                events = plan_df[plan_df["날짜"] == d]
+                cell_text = f"{d.day}\n"
+                for _, ev in events.iterrows():
+                    stime = fmt_hm(ev["시작"])
+                    etime = fmt_hm(ev["끝"])
+                    title = ev["과목"]
+                    detail = ev.get("세부", "")
+                    duration = int((ev["끝"] - ev["시작"]).total_seconds() // 60)
+                    hours, mins = divmod(duration, 60)
+                    dur_str = f"{hours}시간 {mins}분" if hours else f"{mins}분"
+                    cell_text += f"{stime}~{etime} {title} {detail} ({dur_str})\n"
+                pdf.multi_cell(col_w, 5, cell_text, border=1)
+            else:
+                pdf.cell(col_w, row_h, "", border=1)
+            day_idx += 1
+        pdf.ln()
+
+    # PDF를 BytesIO 버퍼에 저장
+    pdf_buffer = BytesIO()
+    pdf.output(pdf_buffer)
+   
 # -----------------------------
 # 좌: 요약, 우: 다이어리 미리보기(전체 기간)
 # -----------------------------
@@ -634,51 +670,7 @@ def ensure_font(pdf):
 def fmt_hm(dt):
     return dt.strftime("%H:%M")
 
-# ✅ 월간 달력 PDF 생성 함수
-def make_calendar_pdf(all_days, plan_df):
-    pdf = FPDF(orientation="L", unit="mm", format="A4")
-    pdf = ensure_font(pdf)
 
-    pdf.add_page()
-    pdf.set_font("NotoSans", "", 16)
-    pdf.cell(0, 10, "📅 학습 다이어리 (월간 달력)", ln=True, align="C")
-    pdf.ln(5)
-
-    # 요일 헤더
-    pdf.set_font("NotoSans", "", 12)
-    weekdays = ["월", "화", "수", "목", "금", "토", "일"]
-    col_w = 277 / 7  # A4 가로폭에 맞춤
-    row_h = 30
-    for wd in weekdays:
-        pdf.cell(col_w, 10, wd, border=1, align="C")
-    pdf.ln()
-
-    # 날짜별 박스
-    day_idx = 0
-    for week in range(6):  # 최대 6주
-        for wd in range(7):
-            if day_idx < len(all_days):
-                d = all_days[day_idx]
-                events = plan_df[plan_df["날짜"] == d]
-                cell_text = f"{d.day}\n"
-                for _, ev in events.iterrows():
-                    stime = fmt_hm(ev["시작"])
-                    etime = fmt_hm(ev["끝"])
-                    title = ev["과목"]
-                    detail = ev.get("세부", "")
-                    duration = int((ev["끝"] - ev["시작"]).total_seconds() // 60)
-                    hours, mins = divmod(duration, 60)
-                    dur_str = f"{hours}시간 {mins}분" if hours else f"{mins}분"
-                    cell_text += f"{stime}~{etime} {title} {detail} ({dur_str})\n"
-                pdf.multi_cell(col_w, 5, cell_text, border=1)
-            else:
-                pdf.cell(col_w, row_h, "", border=1)
-            day_idx += 1
-        pdf.ln()
-
-    # PDF를 BytesIO 버퍼에 저장
-    pdf_buffer = BytesIO()
-    pdf.output(pdf_buffer)
     pdf_buffer.seek(0)
     return pdf_buffer
 pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
