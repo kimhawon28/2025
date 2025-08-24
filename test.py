@@ -574,66 +574,54 @@ def render_day_diary(d: date, tl_df: pd.DataFrame, event_lines: List[Dict]):
         st.write(o["line"])  # 라인 출력
 # PDF 생성
 # ✅ 월간 달력 PDF 생성 함수
-from io import BytesIO
+from fpdf import FPDF
 
 def make_calendar_pdf(all_days, plan_scoped_df):
-    pdf = FPDF()
+    pdf = FPDF(orientation="L", unit="mm", format="A4")
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
+
+    # ✅ 한글 폰트 (NotoSans 설치 필요)
+    font_path = "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"
+    if os.path.exists(font_path):
+        pdf.add_font("NotoSans", "", fname=font_path, uni=True)
+        pdf.set_font("NotoSans", "", 12)
+    else:
+        pdf.set_font("Arial", size=12)
 
     # 제목
-    pdf.cell(0, 10, "📅 학습 다이어리 (월간 달력)", ln=True, align="C")
-
-    # (여기서 달력 생성해서 pdf에 넣는 코드...)
-
-    # 🔹 PDF를 bytes로 변환
-    pdf_output = BytesIO()
-    pdf.output(pdf_output, 'S').encode('latin1')
-    pdf_bytes = pdf_output.getvalue()
-
-    return pdf_bytes
-
-
-    pdf.add_page()
-    pdf.set_font("NotoSans", "", 16)
+    pdf.set_font_size(16)
     pdf.cell(0, 10, "📅 학습 다이어리 (월간 달력)", ln=True, align="C")
     pdf.ln(5)
 
     # 요일 헤더
-    pdf.set_font("NotoSans", "", 12)
     weekdays = ["월", "화", "수", "목", "금", "토", "일"]
-    col_w = 277 / 7  # A4 가로폭에 맞춤
-    row_h = 30
+    col_w = 277 / 7
     for wd in weekdays:
         pdf.cell(col_w, 10, wd, border=1, align="C")
     pdf.ln()
 
     # 날짜별 박스
     day_idx = 0
+    row_h = 35
     for week in range(6):  # 최대 6주
+        y_before = pdf.get_y()
         for wd in range(7):
             if day_idx < len(all_days):
                 d = all_days[day_idx]
-                events = plan_df[plan_df["날짜"] == d]
+                events = plan_scoped_df[plan_scoped_df["날짜"] == d]
                 cell_text = f"{d.day}\n"
                 for _, ev in events.iterrows():
-                    stime = fmt_hm(ev["시작"])
-                    etime = fmt_hm(ev["끝"])
-                    title = ev["과목"]
-                    detail = ev.get("세부", "")
-                    duration = int((ev["끝"] - ev["시작"]).total_seconds() // 60)
-                    hours, mins = divmod(duration, 60)
-                    dur_str = f"{hours}시간 {mins}분" if hours else f"{mins}분"
-                    cell_text += f"{stime}~{etime} {title} {detail} ({dur_str})\n"
+                    cell_text += f"- {ev['과목']} {ev['범위']} ({fmt_hm(ev['분'])})\n"
+                x_before = pdf.get_x()
                 pdf.multi_cell(col_w, 5, cell_text, border=1)
+                pdf.set_xy(x_before + col_w, y_before)
             else:
                 pdf.cell(col_w, row_h, "", border=1)
             day_idx += 1
         pdf.ln()
 
-    # PDF를 BytesIO 버퍼에 저장
-    pdf_buffer = BytesIO()
-    pdf.output(pdf_buffer)
+    # ✅ bytes 로 반환
+    return pdf.output(dest="S").encode("latin1")
    
 # -----------------------------
 # 좌: 요약, 우: 다이어리 미리보기(전체 기간)
