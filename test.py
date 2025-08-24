@@ -370,7 +370,7 @@ elif menu == "내 리스트 기반(간단)":
     st.header("📝 최근 읽은 책/키워드 기반 간단 추천")
     user_text = st.text_area(
         "최근 읽은 책 제목/키워드(줄바꿈으로 구분)",
-        placeholder="예) 달러구트 꿈 백화점
+        placeholder="예) 달러구트 꿈 백화점")
 역행자
 철학
 위로",
