@@ -654,8 +654,8 @@ buffer = BytesIO()
     # 한글 폰트 등록
 pdfmetrics.registerFont(UnicodeCIDFont('HYSMyeongJo-Medium'))
 
-    doc = SimpleDocTemplate(buffer, pagesize=A4)
-    story = []
+doc = SimpleDocTemplate(buffer, pagesize=A4)
+story = []
 
     # 스타일
     styles = getSampleStyleSheet()
