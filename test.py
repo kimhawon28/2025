@@ -24,7 +24,8 @@ import requests
 from io import BytesIO
 from fpdf import FPDF
 
-from datetime import datetime, date, time, timedelta
+from datetime import datetime, date, time
+
 
 # -------------------------
 # Utility: 문자열/숫자/시간 -> datetime 변환
