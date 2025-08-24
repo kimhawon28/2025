@@ -374,7 +374,7 @@ elif menu == "내 리스트 기반(간단)":
 역행자
 철학
 "위로",
-        height=150,
+    height=150,
     )
     k = st.slider("추천 개수", 3, 10, 5, key="mine_k")
 
