@@ -51,11 +51,6 @@ def fmt_hm(x):
     except Exception:
         return str(x)
 
-
-def to_dt(d: date, t: time) -> datetime:
-    return datetime.combine(d, t)
-
-
 # 시험 범위 파서 (텍스트/숫자 범위 모두 지원)
 import re
 
