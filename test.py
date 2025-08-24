@@ -658,52 +658,52 @@ doc = SimpleDocTemplate(buffer, pagesize=A4)
 story = []
 
     # 스타일
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        "Title",
-        parent=styles["Heading1"],
-        fontName="HYSMyeongJo-Medium",
-        fontSize=18,
-        alignment=1,
-    )
-    normal_style = ParagraphStyle(
-        "Normal",
-        parent=styles["Normal"],
-        fontName="HYSMyeongJo-Medium",
-        fontSize=12,
-    )
+styles = getSampleStyleSheet()
+title_style = ParagraphStyle(
+    "Title",
+    parent=styles["Heading1"],
+    fontName="HYSMyeongJo-Medium",
+    fontSize=18,
+    alignment=1,
+)
+normal_style = ParagraphStyle(
+    "Normal",
+    parent=styles["Normal"],
+    fontName="HYSMyeongJo-Medium",
+    fontSize=12,
+)
 
     # 제목
-    story.append(Paragraph("📅 학습 다이어리 (월간 달력)", title_style))
-    story.append(Spacer(1, 20))
+story.append(Paragraph("📅 학습 다이어리 (월간 달력)", title_style))
+story.append(Spacer(1, 20))
 
     # 일정 테이블
-    data = [["날짜", "일정"]]
-    for d in all_days:
-        daily_plan = plan_scoped_df[plan_scoped_df["날짜"] == d.strftime("%Y-%m-%d")]
-        if daily_plan.empty:
-            data.append([d.strftime("%m/%d (%a)"), ""])
-        else:
-            schedules = []
-            for _, row in daily_plan.iterrows():
-                schedules.append(f"{row['시작']}~{row['종료']} {row['과목']}")
-            data.append([d.strftime("%m/%d (%a)"), "<br/>".join(schedules)])
+data = [["날짜", "일정"]]
+for d in all_days:
+    daily_plan = plan_scoped_df[plan_scoped_df["날짜"] == d.strftime("%Y-%m-%d")]
+    if daily_plan.empty:
+        data.append([d.strftime("%m/%d (%a)"), ""])
+    else:
+        schedules = []
+        for _, row in daily_plan.iterrows():
+            schedules.append(f"{row['시작']}~{row['종료']} {row['과목']}")
+        data.append([d.strftime("%m/%d (%a)"), "<br/>".join(schedules)])
 
-    table = Table(data, colWidths=[100, 350])
-    table.setStyle(TableStyle([
-        ("FONTNAME", (0, 0), (-1, -1), "HYSMyeongJo-Medium"),
-        ("FONTSIZE", (0, 0), (-1, -1), 10),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-        ("ALIGN", (0, 0), (-1, -1), "LEFT"),
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
-    ]))
-    story.append(table)
+table = Table(data, colWidths=[100, 350])
+table.setStyle(TableStyle([
+    ("FONTNAME", (0, 0), (-1, -1), "HYSMyeongJo-Medium"),
+    ("FONTSIZE", (0, 0), (-1, -1), 10),
+    ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
+    ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
+    ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+]))
+story.append(table)
 
     # PDF 만들기
-    doc.build(story)
-    buffer.seek(0)
-    return buffer
+doc.build(story)
+buffer.seek(0)
+return buffer
 
 
 # 📌 Streamlit 앱
