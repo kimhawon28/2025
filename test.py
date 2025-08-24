@@ -16,15 +16,14 @@ st.set_page_config(
 # ------------------------------
 st.markdown("""
 <style>
-/* 전체 배경 + 글자 */
+/* 전체 배경 */
 .stApp {
     background-color: #26365c;
-    color: #ffffff;
     font-family: 'Arial Rounded MT Bold', 'Helvetica Rounded', 'Pretendard', sans-serif;
 }
 
-/* 모든 텍스트를 흰색으로 */
-* {
+/* 일반 텍스트는 흰색 */
+.stApp, .stMarkdown, h1, h2, h3, h4, h5, h6, p, label {
     color: #ffffff !important;
 }
 
@@ -35,6 +34,7 @@ st.markdown("""
     border-radius: 1rem;
     background-color: rgba(255,255,255,0.08);
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    color: #ffffff !important;
 }
 
 /* 버튼 */
@@ -52,15 +52,19 @@ st.markdown("""
     transform: scale(1.05);
 }
 
-/* 라디오/셀렉트박스 텍스트 색 */
+/* 라디오/셀렉트박스 항목 색상 */
 .stRadio > label, .stSelectbox > div, .stCheckbox > label {
     color: #ffffff !important;
 }
 
-/* 작은 설명글 */
-.small-note {
-    font-size: 0.9rem;
-    color: #dddddd !important;
+/* ===== 입력창 내부 글자/메뉴 글자 (검정색) ===== */
+input, textarea, select, .stTextInput input, .stSelectbox div[data-baseweb="select"] * {
+    color: #000000 !important;
+}
+
+/* 사이드바 메뉴 텍스트는 검정 */
+section[data-testid="stSidebar"] .stRadio label {
+    color: #000000 !important;
 }
 </style>
 
