@@ -722,13 +722,17 @@ plan_scoped_df = pd.DataFrame([
 
 # PDF 생성 버튼
 if st.button("📥 PDF 생성하기"):
-    pdf_file = make_monthly_calendar_pdf(year, month, plan_scoped_df)
-    with open(pdf_file, "rb") as f:
-        st.download_button("📥 월간 달력 PDF 다운로드", f, file_name="calendar.pdf")
+   # all_days 리스트에서 연도/월 뽑기
+year = all_days[0].year
+month = all_days[0].month
 
-    st.download_button(
-        label="📥 PDF 다운로드",
-        data=pdf_buffer,
-        file_name="calendar.pdf",
-        mime="application/pdf"
-    )
+# PDF 생성
+pdf_file = make_monthly_calendar_pdf(year, month, plan_scoped_df, all_days)
+
+# 다운로드 버튼
+st.download_button(
+    "📥 월간 달력 PDF 다운로드",
+    pdf_file,
+    file_name="calendar.pdf"
+)
+
