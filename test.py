@@ -19,6 +19,11 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
+import os
+import requests
+from io import BytesIO
+from fpdf import FPDF
+
 from datetime import datetime, date, time, timedelta
 
 # -------------------------
@@ -47,12 +52,6 @@ def build_busy_intervals_for_day(d: date):
     # ✅ 여기서 to_dt 호출
     day_s, day_e = to_dt(d, day_start), to_dt(d, day_end)
     return [(day_s, day_e)], []  # (예시로 전체 구간 바쁨 처리)
-
-import os
-import requests
-from io import BytesIO
-from fpdf import FPDF
-
 
 
 # -----------------------------
