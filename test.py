@@ -574,9 +574,25 @@ def render_day_diary(d: date, tl_df: pd.DataFrame, event_lines: List[Dict]):
         st.write(o["line"])  # 라인 출력
 # PDF 생성
 # ✅ 월간 달력 PDF 생성 함수
-def make_calendar_pdf(all_days, plan_df):
-    pdf = FPDF(orientation="L", unit="mm", format="A4")
-    pdf = ensure_font(pdf)
+from io import BytesIO
+
+def make_calendar_pdf(all_days, plan_scoped_df):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    # 제목
+    pdf.cell(0, 10, "📅 학습 다이어리 (월간 달력)", ln=True, align="C")
+
+    # (여기서 달력 생성해서 pdf에 넣는 코드...)
+
+    # 🔹 PDF를 bytes로 변환
+    pdf_output = BytesIO()
+    pdf.output(pdf_output, 'S').encode('latin1')
+    pdf_bytes = pdf_output.getvalue()
+
+    return pdf_bytes
+
 
     pdf.add_page()
     pdf.set_font("NotoSans", "", 16)
@@ -671,12 +687,12 @@ def fmt_hm(dt):
     return dt.strftime("%H:%M")
 
 
-    pdf_buffer.seek(0)
-    return pdf_buffer
-pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
+   pdf_buffer = make_calendar_pdf(all_days, plan_scoped_df)
+
 st.download_button(
     label="📥 월간 학습 다이어리 PDF 다운로드",
     data=pdf_buffer,
     file_name="study_calendar.pdf",
     mime="application/pdf"
 )
+
