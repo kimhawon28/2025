@@ -40,26 +40,16 @@ def round5(m: int) -> int:
     return int(round(m/5)*5)
 
 
-def fmt_hm(dt):
-    """
-    dt가 datetime이면 HH:MM 문자열 반환
-    int(분 단위)면 HH:MM으로 변환해서 반환
-    """
-    import pandas as pd
-    import datetime
-
-    if pd.isna(dt):
+def fmt_hm(x):
+    """분(int)을 HH:MM 문자열로 변환"""
+    if pd.isna(x):
         return ""
-
-    if hasattr(dt, "strftime"):  # datetime 같은 객체
-        return dt.strftime("%H:%M")
-
-    if isinstance(dt, (int, float)):  # 분 단위 숫자
-        hours, mins = divmod(int(dt), 60)
+    try:
+        minutes = int(x)
+        hours, mins = divmod(minutes, 60)
         return f"{hours:02d}:{mins:02d}"
-
-    return str(dt)  # 기타 타입 fallback
-
+    except Exception:
+        return str(x)
 
 
 def to_dt(d: date, t: time) -> datetime:
