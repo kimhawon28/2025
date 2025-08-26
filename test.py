@@ -73,7 +73,7 @@ with tab1:
             "실험적 독서형": "실험적인 텍스트에 매력을 느껴요."
         }
 
-        st.subheader(f"🔹 당신의 독서 성향: {personality}")
+        st.subheader(f"🔹 당신의 독서 성향  : {personality}")
         st.write(descriptions.get(personality, "당신의 독서 스타일을 찾는 중이에요."))
 
         book_recommendations = {
@@ -89,7 +89,7 @@ with tab1:
             "실험적 독서형": ["구의 증명  - 최진영", "삼미 슈퍼스타즈의 마지막 팬클럽 - 박민규", "일인용 책 - 신해욱"]
         }
 
-        st.subheader("📖 추천 도서")
+        st.subheader("📖 추천 도")
         for b in book_recommendations[personality]:
             st.write(f"- {b}")
 
