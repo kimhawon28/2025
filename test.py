@@ -29,13 +29,13 @@ with tab1:
         score = 0
         if q1 == "감정을 크게 느끼는 편이다": score += 1
         else: score += 2
-        if q2 == "철학적이고 사색적인 편": score += 1
+        if q2 == "실용적이고 현실적인 편": score += 1
         else: score += 2
         if q3 == "베스트셀러/트렌드를 본다": score += 1
         else: score += 2
-        if q4 == "마음을 위로받고 치유": score += 1
+        if q4 == "지식과 정보 습득": score += 1
         else: score += 2
-        if q5 == "스토리 몰입, 소설": score += 1
+        if q5 == "실용적/자기계발": score += 1
         else: score += 2
 
         # 성향 매핑
