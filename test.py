@@ -40,17 +40,17 @@ with tab1:
 
         # 성향 매핑
         if score <= 5:
-            personality = "힐링 독서형"
+            personality = "철학 @사색형"
         elif score == 6:
             personality = "감성 몰입형"
         elif score == 7:
-            personality = "철학 사색형"
+            personality = "현실 @적용형"
         elif score == 8:
-            personality = "사회 참여형"
-        elif score == 9:
             personality = "트렌드 캐처형"
+        elif score == 9:
+            personality = "힐링 @독서형"
         elif score == 10:
-            personality = "현실 적용형"
+            personality = "사회 참여형"
         elif score == 11:
             personality = "지식 탐구형"
         elif score == 12:
