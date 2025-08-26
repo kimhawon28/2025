@@ -1,17 +1,21 @@
 import streamlit as st
 import requests
 
-st.set_page_config(page_title="책과 친해지기", layout="centered")
-st.title("📚 책과 친해지기")
+# --- Streamlit 페이지 기본 설정 ---
+st.set_page_config(page_title="책과 친해지기", layout="centered")     # 웹앱 제목과 레이아웃 설정
+st.title("📚 책과 친해지기")     # 페이지 최상단 타이틀 출력
 
-# --- 탭 생성 ---
+# --- 탭 생성 (두 개의 기능을 구분) ---
 tab1, tab2 = st.tabs(["독서 성향 테스트", "도서 검색"])
+# tab1 : 독서 성향 테스트
+# tab2 : 도서 검색 (네이버 API 이용)
 
 # --- 탭 1: 독서 성향 테스트 ---
 with tab1:
-    st.header("📋 독서 성향 테스트")
-    st.write("각 질문에서 자신에게 가까운 선택지를 골라주세요.")
-
+    st.header("📋 독서 성향 테스트")     # 소제목
+    st.write("각 질문에서 자신에게 가까운 선택지를 골라주세요.")      # 안내 문구
+    
+# --- 독서 성향 질문 5개 ---
     q1 = st.radio("1. 책을 읽을 때 나는?", 
                   ["감정을 크게 느끼는 편이다", "지식을 얻는 것이 더 좋다"])
     q2 = st.radio("2. 나는?", 
@@ -27,9 +31,9 @@ with tab1:
     q7 = st.radio("7. 책을 읽을 때 나는 주로", 
                   ["처음부터 끝까지 차근차근 읽는다", "흥미 있는 부분만 골라서 읽는다"])
 
-    # --- 결과 버튼 ---
-    if st.button("결과 보기"):
-        # 점수 계산
+# --- 결과 버튼 ---
+    if st.button("결과 보기"):     # 버튼을 눌렀을 때만 결과 계산 실행
+# 점수 계산
         score = 0
         if q1 == "감정을 크게 느끼는 편이다": score += 1
         else: score += 3
@@ -46,7 +50,7 @@ with tab1:
         if q7 == "흥미 있는 부분만 골라서 읽는다": score += 1
         else: score += 2
 
-        # 성향 매핑
+# --- 점수에 따른 독서 성향 분류 ---
         if score <= 7:
             personality = "사회 참여형"
         elif score == 8:
@@ -67,7 +71,8 @@ with tab1:
             personality = "스토리 몰입형"
         else:
             personality = "실험적 독서형"
-
+            
+# --- 성향별 설명 문구 ---
         descriptions = {
             "힐링 독서형": "마음을 위로받고 치유받는 독서를 선호해요.",
             "감성 몰입형": "감정을 자극하는 문학 작품을 즐겨요.",
@@ -81,9 +86,12 @@ with tab1:
             "실험적 독서형": "실험적인 텍스트에 매력을 느껴요."
         }
 
-        st.subheader(f"🔹 당신의 독서 성향  : {personality}")
-        st.write(descriptions.get(personality, "당신의 독서 스타일을 찾는 중이에요."))
+# --- 결과 출력 ---
+        
+        st.subheader(f"🔹 당신의 독서 성향  : {personality}")      # 성향 이름
+        st.write(descriptions.get(personality, "당신의 독서 스타일을 찾는 중이에요."))     # 설명 문구
 
+# --- 성향별 추천 도서 목록 ---
         book_recommendations = {
             "힐링 독서형": ["언어의 온도 (말과 글에는 나름의 따뜻함과 차가움이 있다) - 이기주", "우리의 낙원에서 만나자 (이 계절을 함께 건너는 당신에게) - 하태완", "여름을 한 입 베어 물었더니 - 이꽃님"],
             "감성 몰입형": ["노르웨이의 숲 - 무라카미 하루키", "안녕이라 그랬어 - 김애란", "천 개의 파랑 - 천선란"],
@@ -97,40 +105,43 @@ with tab1:
             "실험적 독서형": ["구의 증명  - 최진영", "삼미 슈퍼스타즈의 마지막 팬클럽 - 박민규", "일인용 책 - 신해욱"]
         }
 
+# --- 추천 도서 출력 ---
         st.subheader("📖 추천 도서")
         for b in book_recommendations[personality]:
-            st.write(f"- {b}")
+            st.write(f"- {b}")     # 한 줄씩 출력
 
-# --- 탭 2: 도서 검색 ---
+# --- 탭 2: 도서 검색 (네이버 API 연동) ---
 with tab2:
     st.header("🔎 도서 검색")
-    keyword = st.text_input("검색 키워드를 입력하세요 (예: 소설, 자기계발, 경제)")
-    
-if keyword:
-    url = "https://openapi.naver.com/v1/search/book.json"
+    keyword = st.text_input("검색 키워드를 입력하세요 (예: 소설, 자기계발, 경제)")     # 사용자가 검색어 입력
+
+# --- 네이버 도서 검색 API 호출 ---
+if keyword: # 검색어가 입력되면 실행
+    url = "https://openapi.naver.com/v1/search/book.json"     # 네이버 책 검색 API URL
     headers = {
-        "X-Naver-Client-Id": "ZpjV3RrEyIOBNZ0CkqPM",        # 🔑 발급받은 Client ID
-        "X-Naver-Client-Secret": "Yv857utsaI" # 🔑 발급받은 Client Secret
+        "X-Naver-Client-Id": "ZpjV3RrEyIOBNZ0CkqPM",     # 🔑 발급받은 Client ID
+        "X-Naver-Client-Secret": "Yv857utsaI"     # 🔑 발급받은 Client Secret
     }
-    params = {"query": keyword, "display": 10}  # 최대 10권 추천
+    params = {"query": keyword, "display": 10}     # 검색 파라미터 (검색어, 최대 10권 표시)
 
-    response = requests.get(url, headers=headers, params=params)
+    response = requests.get(url, headers=headers, params=params)     # 네이버 API 요청
 
-    if response.status_code == 200:
-        books = response.json()["items"]
+# --- API 응답 확인 ---    
+    if response.status_code == 200:     # 요청 성공
+        books = response.json()["items"]     # 응답 JSON에서 책 목록 추출
 
-        if len(books) > 0:
+        if len(books) > 0: # 검색 결과가 있다면
             for book in books:
-                st.image(book["image"], width=120)  # 책 표지
-                # <b>태그 제거
+                st.image(book["image"], width=120)     # 책 표지 출력
+ # 제목에 포함된 <b> 태그 제거 (네이버 API는 강조 태그 포함)
                 title = book["title"].replace("<b>", "").replace("</b>", "")
-                st.subheader(title)
+                st.subheader(title)     # 책 제목
                 st.write(f"저자: {book['author']}")
                 st.write(f"출판사: {book['publisher']}")
                 st.write(f"출판일: {book['pubdate']}")
-                st.write(f"[상세보기]({book['link']})")
-                st.markdown("---")
+                st.write(f"[상세보기]({book['link']})")     # 네이버 책 상세 링크
+                st.markdown("---")     # 구분선
         else:
-            st.write("😥 관련 도서를 찾을 수 없습니다.")
+            st.write("😥 관련 도서를 찾을 수 없습니다.")     # 검색 결과 없음
     else:
-        st.error("API 요청 실패. Client ID/Secret을 확인하세요.")
+        st.error("API 요청 실패. Client ID/Secret을 확인하세요.")     # API 인증 실패
