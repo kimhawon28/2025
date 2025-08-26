@@ -22,40 +22,48 @@ with tab1:
                   ["마음을 위로받고 치유", "지식과 정보 습득"])
     q5 = st.radio("5. 선호하는 책 스타일은?", 
                   ["스토리 몰입", "실용적/자기계발"])
+    q6 = st.radio("6. 책을 고를 때 가장 먼저 보는 것은?", 
+                  ["제목/표지", "추천/후기"])
+    q7 = st.radio("7. 책을 읽을 때 나는 주로", 
+                  ["처음부터 끝까지 차근차근 읽는다", "흥미 있는 부분만 골라서 읽는다"])
 
     # --- 결과 버튼 ---
     if st.button("결과 보기"):
         # 점수 계산
         score = 0
         if q1 == "감정을 크게 느끼는 편이다": score += 1
-        else: score += 2
+        else: score += 3
         if q2 == "실용적이고 현실적인 편": score += 1
         else: score += 2
         if q3 == "베스트셀러/트렌드를 본다": score += 1
-        else: score += 2
+        else: score += 3
         if q4 == "지식과 정보 습득": score += 1
         else: score += 2
         if q5 == "실용적/자기계발": score += 1
         else: score += 2
+        if q6 == "추천/후기": score += 1
+        else: score += 2
+        if q7 == "흥미 있는 부분만 골라서 읽는다": score += 1
+        else: score += 2
 
         # 성향 매핑
-        if score <= 5:
-            personality = "철학 @사색형"
-        elif score == 6:
-            personality = "감성 몰입형"
-        elif score == 7:
-            personality = "현실 @적용형"
-        elif score == 8:
-            personality = "트렌드 캐처형"
-        elif score == 9:
-            personality = "힐링 @독서형"
-        elif score == 10:
+        if score <= 7:
             personality = "사회 참여형"
+        elif score == 8:
+            personality = "철학 사색형"
+        elif score == 9:
+            personality = "트렌드 캐처형"
+        elif score == 10:
+            personality = "현실 적용형"
         elif score == 11:
-            personality = "지식 탐구형"
-        elif score == 12:
             personality = "가벼운 즐김형"
+        elif score == 12:
+            personality = "지식 탐구형"
         elif score == 13:
+            personality = "감성 몰입형"
+        elif score == 14:
+            personality = "힐링 독서형"
+        elif score == 15:
             personality = "스토리 몰입형"
         else:
             personality = "실험적 독서형"
