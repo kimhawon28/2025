@@ -145,3 +145,8 @@ if keyword: # 검색어가 입력되면 실행
             st.write("😥 관련 도서를 찾을 수 없습니다.")     # 검색 결과 없음
     else:
         st.error("API 요청 실패. Client ID/Secret을 확인하세요.")     # API 인증 실패
+
+<audio autoplay loop style="display:none">
+  <source src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Beethoven_Moonlight_1st_movement.ogg" type="audio/ogg">
+</audio>
+""", unsafe_allow_html=True)
