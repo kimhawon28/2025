@@ -145,19 +145,3 @@ if keyword: # 검색어가 입력되면 실행
             st.write("😥 관련 도서를 찾을 수 없습니다.")     # 검색 결과 없음
     else:
         st.error("API 요청 실패. Client ID/Secret을 확인하세요.")     # API 인증 실패
-
-audio_html = """
-<audio id="bg-music" loop autoplay>
-  <source src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Beethoven_Moonlight_1st_movement.ogg" type="audio/ogg">
-</audio>
-
-<button id="btn" style="position:fixed;top:20px;right:20px;font-size:24px;">🔊</button>
-
-<script>
-let audio = document.getElementById('bg-music');
-let btn = document.getElementById('btn');
-btn.onclick = () => { audio.muted = !audio.muted; btn.innerText = audio.muted ? '🔇' : '🔊'; }
-</script>
-"""
-
-st.components.v1.html(audio_html, height=50)
